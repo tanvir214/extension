@@ -7,17 +7,56 @@
   let editorReady = false;
 
   const snippets = [
-    { name: "For Loop", code: "for (let i = 0; i < arr.length; i++) {\n  \n}" },
-    { name: "Arrow Function", code: "const fn = (x) => {\n  \n};" },
-    { name: "Console Log", code: "console.log();" },
-    { name: "Async Function", code: "async function fn() {\n  \n}" },
     {
-      name: "Try Catch",
-      code: "try {\n  \n} catch (err) {\n  console.error(err);\n}",
+      name: "Amended Text",
+      code: '<P STYLE="font: 8pt/10pt Arial, Helvetica, Sans-Serif; margin: 0 0 6pt 0pt;">  </P>',
+    },
+    {
+      name: "Top Red Text",
+      code: '<P STYLE="font: 8pt/10pt Arial, Helvetica, Sans-Serif; margin: 0 0 6pt 0pt; color: red"> </P>',
+    },
+    {
+      name: "Index Special Char",
+      code: '<i>Index<sub>t</sub></i>',
+    },
+    {
+      name: "Pi Special Char",
+      code: '<i>Pi,<sub>t</sub></i>',
+    },
+    {
+      name: "n Special Char",
+      code: '<i>n</i>',
+    },
+    {
+        name: "IS Special Char",
+        code: '<i>IS<sub>i,t</sub></i>',
+    },
+    {
+        name: "D Special Char",
+        code: '<i>D<sub>t</sub></i>',
+    },
+    {
+      name: "1st Table Graphic",
+      code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt1.jpg" ALT="" STYLE="height: 177.75pt; width: 558pt"></P>',
+      preview: '[Image Snippet]',
+    },
+    {
+      name: "2nd Table Graphic",
+      code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt2.jpg" ALT="" STYLE="height: 330pt; width: 558pt"></P>',
+      preview: '[Image Snippet]',
+    },
+    {
+      name: "Single Table Graphic",
+      code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt.jpg" ALT="" STYLE="height: 350pt; width: 500pt"></P>',
+      preview: '[Image Snippet]',
+    },
+    {
+      name: "White Border",
+      code: 'border-bottom: 1px solid #FFFFFF;',
     },
   ];
 
-  window.addEventListener('monaco-helper-editor-ready', () => {
+  window.addEventListener("monaco-helper-editor-ready", () => {
     editorReady = true;
   });
 
@@ -33,7 +72,7 @@
         (s, i) =>
           `<div class="mh-snippet" data-idx="${i}">
         <div class="mh-sname">${s.name}</div>
-        <div class="mh-scode">${s.code.split("\n")[0]}</div>
+        <div class="mh-scode">${s.preview || s.code.split("\n")[0]}</div>
       </div>`
       )
       .join("");
@@ -81,7 +120,7 @@
       if (e.key === "Enter") find();
     };
 
-    window.addEventListener('monaco-helper-find-result', (e) => {
+    window.addEventListener("monaco-helper-find-result", (e) => {
       const { matches } = e.detail;
       if (matches.length === 0) {
         showStatus("No matches found");
@@ -89,23 +128,29 @@
         return;
       }
 
-      currentMatch = (currentMatch) % matches.length;
-      window.dispatchEvent(new CustomEvent('monaco-helper-set-selection', { detail: { range: matches[currentMatch].range } }));
-      showStatus(`Found ${matches.length} matches. Showing #${currentMatch + 1}`);
+      currentMatch = currentMatch % matches.length;
+      window.dispatchEvent(
+        new CustomEvent("monaco-helper-set-selection", {
+          detail: { range: matches[currentMatch].range },
+        })
+      );
+      showStatus(
+        `Found ${matches.length} matches. Showing #${currentMatch + 1}`
+      );
       currentMatch++;
     });
   }
 
   function toggle() {
     if (!panel) {
-      var s = document.createElement('script');
-      s.src = chrome.runtime.getURL('injected.js');
-      s.onload = function() {
-          this.remove();
+      var s = document.createElement("script");
+      s.src = chrome.runtime.getURL("injected.js");
+      s.onload = function () {
+        this.remove();
       };
       (document.head || document.documentElement).appendChild(s);
       createPanel();
-    };
+    }
     isVisible = !isVisible;
     panel.style.display = isVisible ? "flex" : "none";
   }
@@ -122,7 +167,9 @@
       showStatus("Editor not ready");
       return;
     }
-    window.dispatchEvent(new CustomEvent('monaco-helper-insert-snippet', { detail: { code } }));
+    window.dispatchEvent(
+      new CustomEvent("monaco-helper-insert-snippet", { detail: { code } })
+    );
     showStatus("Snippet inserted!");
   }
 
@@ -139,7 +186,9 @@
       showStatus("Enter search text");
       return;
     }
-    window.dispatchEvent(new CustomEvent('monaco-helper-find', { detail: { searchText } }));
+    window.dispatchEvent(
+      new CustomEvent("monaco-helper-find", { detail: { searchText } })
+    );
   }
 
   function replaceOne() {
@@ -153,7 +202,11 @@
       showStatus("Enter search text");
       return;
     }
-    window.dispatchEvent(new CustomEvent('monaco-helper-replace-one', { detail: { searchText, replaceText } }));
+    window.dispatchEvent(
+      new CustomEvent("monaco-helper-replace-one", {
+        detail: { searchText, replaceText },
+      })
+    );
   }
 
   function replaceAll() {
@@ -167,9 +220,13 @@
       showStatus("Enter search text");
       return;
     }
-    window.dispatchEvent(new CustomEvent('monaco-helper-replace-all', { detail: { searchText, replaceText } }));
+    window.dispatchEvent(
+      new CustomEvent("monaco-helper-replace-all", {
+        detail: { searchText, replaceText },
+      })
+    );
   }
-  
+
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.action === "toggle") {
       toggle();
@@ -177,5 +234,4 @@
       sendResponse({ status: "ok" });
     }
   });
-
 })();
