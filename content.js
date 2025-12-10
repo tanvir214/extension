@@ -17,42 +17,42 @@
     },
     {
       name: "Index Special Char",
-      code: '<i>Index<sub>t</sub></i>',
+      code: "<i>Index<sub>t</sub></i>",
     },
     {
       name: "Pi Special Char",
-      code: '<i>Pi,<sub>t</sub></i>',
+      code: "<i>Pi,<sub>t</sub></i>",
     },
     {
       name: "n Special Char",
-      code: '<i>n</i>',
+      code: "<i>n</i>",
     },
     {
-        name: "IS Special Char",
-        code: '<i>IS<sub>i,t</sub></i>',
+      name: "IS Special Char",
+      code: "<i>IS<sub>i,t</sub></i>",
     },
     {
-        name: "D Special Char",
-        code: '<i>D<sub>t</sub></i>',
+      name: "D Special Char",
+      code: "<i>D<sub>t</sub></i>",
     },
     {
       name: "1st Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt1.jpg" ALT="" STYLE="height: 177.75pt; width: 558pt"></P>',
-      preview: '[Image Snippet]',
+      preview: "[Image Snippet]",
     },
     {
       name: "2nd Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt2.jpg" ALT="" STYLE="height: 330pt; width: 558pt"></P>',
-      preview: '[Image Snippet]',
+      preview: "[Image Snippet]",
     },
     {
       name: "Single Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt.jpg" ALT="" STYLE="height: 350pt; width: 500pt"></P>',
-      preview: '[Image Snippet]',
+      preview: "[Image Snippet]",
     },
     {
       name: "White Border",
-      code: 'border-bottom: 1px solid #FFFFFF;',
+      code: "border-bottom: 1px solid #FFFFFF;",
     },
   ];
 
@@ -64,6 +64,14 @@
     if (panel) return;
 
     panel = document.createElement("div");
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .mh-search-highlight { background-color: rgba(245, 212, 66, 0.5); }
+      .mh-current-match { background-color: #f5d442; border: 1px solid #c2a629; }
+    `;
+    document.head.appendChild(style);
+
     panel.id = "mh-panel";
     panel.style.display = "none";
 
@@ -91,6 +99,10 @@
           <button id="mh-replace-one">Replace</button>
           <button id="mh-replace-all">Replace All</button>
         </div>
+        <div class="mh-nav-btns">
+          <button id="mh-prev">Previous</button>
+          <button id="mh-next">Next</button>
+        </div>
         <div id="mh-status"></div>
       </div>
       <div class="mh-section">
@@ -106,6 +118,8 @@
   function attachListeners() {
     document.getElementById("mh-close").onclick = toggle;
     document.getElementById("mh-find").onclick = find;
+    document.getElementById("mh-next").onclick = findNext;
+    document.getElementById("mh-prev").onclick = findPrevious;
     document.getElementById("mh-replace-one").onclick = replaceOne;
     document.getElementById("mh-replace-all").onclick = replaceAll;
 
@@ -121,23 +135,14 @@
     };
 
     window.addEventListener("monaco-helper-find-result", (e) => {
-      const { matches } = e.detail;
+      const { matches, currentMatch } = e.detail;
       if (matches.length === 0) {
-        showStatus("No matches found");
-        currentMatch = 0;
+        showStatus("No matches found.");
         return;
       }
-
-      currentMatch = currentMatch % matches.length;
-      window.dispatchEvent(
-        new CustomEvent("monaco-helper-set-selection", {
-          detail: { range: matches[currentMatch].range },
-        })
-      );
-      showStatus(
-        `Found ${matches.length} matches. Showing #${currentMatch + 1}`
-      );
-      currentMatch++;
+      if (currentMatch !== -1) {
+        showStatus(`${currentMatch + 1} of ${matches.length} matches`);
+      }
     });
   }
 
@@ -159,7 +164,8 @@
     const status = document.getElementById("mh-status");
     status.textContent = msg;
     status.style.display = "block";
-    setTimeout(() => (status.style.display = "none"), 2000);
+    // Using a longer timeout for better user experience
+    setTimeout(() => (status.style.display = "none"), 3000);
   }
 
   function insertSnippet(code) {
@@ -172,8 +178,6 @@
     );
     showStatus("Snippet inserted!");
   }
-
-  let currentMatch = 0;
 
   function find() {
     if (!editorReady) {
@@ -189,6 +193,22 @@
     window.dispatchEvent(
       new CustomEvent("monaco-helper-find", { detail: { searchText } })
     );
+  }
+
+  function findNext() {
+    if (!editorReady) {
+      showStatus("Editor not ready");
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("monaco-helper-find-next"));
+  }
+
+  function findPrevious() {
+    if (!editorReady) {
+      showStatus("Editor not ready");
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("monaco-helper-find-previous"));
   }
 
   function replaceOne() {
