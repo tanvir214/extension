@@ -8,49 +8,60 @@
 
   const snippets = [
     {
+      category: "Text Elements",
       name: "Amended Text",
       code: '<P STYLE="font: 8pt/10pt Arial, Helvetica, Sans-Serif; margin: 0 0 6pt 0pt;">  </P>',
     },
     {
+      category: "Text Elements",
       name: "Top Red Text",
       code: '<P STYLE="font: 8pt/10pt Arial, Helvetica, Sans-Serif; margin: 0 0 6pt 0pt; color: red"> </P>',
     },
     {
+      category: "Special Characters",
       name: "Index Special Char",
       code: "<i>Index<sub>t</sub></i>",
     },
     {
+      category: "Special Characters",
       name: "Pi Special Char",
       code: "<i>Pi,<sub>t</sub></i>",
     },
     {
+      category: "Special Characters",
       name: "n Special Char",
       code: "<i>n</i>",
     },
     {
+      category: "Special Characters",
       name: "IS Special Char",
       code: "<i>IS<sub>i,t</sub></i>",
     },
     {
+      category: "Special Characters",
       name: "D Special Char",
       code: "<i>D<sub>t</sub></i>",
     },
     {
+      category: "CSS",
       name: "1st Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt1.jpg" ALT="" STYLE="height: 177.75pt; width: 558pt"></P>',
       preview: "[Image Snippet]",
     },
     {
+      category: "Table Graphics",
       name: "2nd Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt2.jpg" ALT="" STYLE="height: 330pt; width: 558pt"></P>',
       preview: "[Image Snippet]",
     },
     {
+      category: "Table Graphics",
       name: "Single Table Graphic",
       code: '<P STYLE="text-align: center;font: 10pt Arial, Helvetica, Sans-Serif; margin: 0 0 0 12.25pt"><IMG SRC="image_gt.jpg" ALT="" STYLE="height: 350pt; width: 500pt"></P>',
       preview: "[Image Snippet]",
     },
     {
+      category: "CSS",
       name: "White Border",
       code: "border-bottom: 1px solid #FFFFFF;",
     },
@@ -75,14 +86,24 @@
     panel.id = "mh-panel";
     panel.style.display = "none";
 
-    let snippetHTML = snippets
+    const categories = [...new Set(snippets.map((s) => s.category))];
+
+    let categoryButtonsHTML = categories
       .map(
-        (s, i) =>
-          `<div class="mh-snippet" data-idx="${i}">
+        (cat) =>
+          `<button class="mh-category-btn" data-category="${cat}">${cat}</button>`
+      )
+      .join("");
+
+    let snippetHTML = snippets
+      .map((s, i) => {
+        return `<div class="mh-snippet" data-idx="${i}" data-category="${
+          s.category
+        }" style="display: none;">
         <div class="mh-sname">${s.name}</div>
         <div class="mh-scode">${s.preview || s.code.split("\n")[0]}</div>
-      </div>`
-      )
+      </div>`;
+      })
       .join("");
 
     panel.innerHTML = `
@@ -107,7 +128,10 @@
       </div>
       <div class="mh-section">
         <h4>Snippets</h4>
-        <div id="mh-snippets">${snippetHTML}</div>
+        <div id="mh-snippet-categories" class="mh-category-tabs">
+          ${categoryButtonsHTML}
+        </div>
+        <div id="mh-snippets-container">${snippetHTML}</div>
       </div>
     `;
 
@@ -127,6 +151,24 @@
       el.onclick = () => {
         const idx = parseInt(el.dataset.idx);
         insertSnippet(snippets[idx].code);
+      };
+    });
+
+    document.querySelectorAll(".mh-category-btn").forEach((btn) => {
+      btn.onclick = (e) => {
+        const selectedCategory = e.target.dataset.category;
+
+        // Update active button
+        document
+          .querySelectorAll(".mh-category-btn")
+          .forEach((b) => b.classList.remove("active"));
+        e.target.classList.add("active");
+
+        // Show/hide snippets
+        document.querySelectorAll(".mh-snippet").forEach((snippetEl) => {
+          snippetEl.style.display =
+            snippetEl.dataset.category === selectedCategory ? "flex" : "none";
+        });
       };
     });
 
