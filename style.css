@@ -1,0 +1,145 @@
+#mh-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 80vh;
+  background: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #d4d4d4;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mh-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #3e3e42;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+#mh-close {
+  background: none;
+  border: none;
+  color: #d4d4d4;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+#mh-close:hover {
+  background: #3e3e42;
+}
+
+.mh-section {
+  padding: 15px;
+  border-bottom: 1px solid #3e3e42;
+  overflow-y: auto;
+}
+
+.mh-section:last-child {
+  border-bottom: none;
+}
+
+.mh-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.5px;
+}
+
+.mh-section input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #3c3c3c;
+  border: 1px solid #555;
+  color: #d4d4d4;
+  border-radius: 4px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.mh-section input:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+.mh-btns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.mh-btns button,
+.mh-section button {
+  padding: 6px 10px;
+  background: #0e639c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  flex: 1;
+  min-width: 70px;
+}
+
+.mh-btns button:hover {
+  background: #1177bb;
+}
+
+.mh-btns button:active {
+  background: #0d5a8f;
+}
+
+#mh-status {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: #007acc;
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  display: none;
+}
+
+.mh-snippet {
+  background: #2d2d30;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #3e3e42;
+}
+
+.mh-snippet:hover {
+  background: #37373d;
+  border-color: #007acc;
+}
+
+.mh-sname {
+  font-weight: 600;
+  color: #4ec9b0;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.mh-scode {
+  font-size: 10px;
+  color: #888;
+  font-family: "Courier New", monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

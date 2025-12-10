@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        width: 300px;
+        padding: 15px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        background: #1e1e1e;
+        color: #d4d4d4;
+      }
+      h1 {
+        font-size: 16px;
+        margin: 0 0 15px 0;
+        color: #007acc;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #0e639c;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 10px;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #1177bb;
+      }
+      .info {
+        font-size: 12px;
+        color: #888;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #3e3e42;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Monaco Editor Helper</h1>
+    <button id="toggleHelper">Toggle Helper Panel</button>
+    <div class="info">
+      Click to show/hide the helper panel on pages with Monaco Editor.
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

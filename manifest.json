@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Monaco Helper",
+  "version": "1.0",
+  "description": "Add search, replace and snippets to Monaco Editor",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Monaco Helper",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
