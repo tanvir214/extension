@@ -127,6 +127,11 @@
         <div id="mh-status"></div>
       </div>
       <div class="mh-section">
+        <h4>Extract Header/Footer</h4>
+        <button id="mh-extract-hf">Extract Header/Footer</button>
+        <textarea id="mh-hf-output" rows="5" style="width: 100%; margin-top: 10px;" placeholder="Extracted HTML will appear here..."></textarea>
+      </div>
+      <div class="mh-section">
         <h4>Snippets</h4>
         <div id="mh-snippet-categories" class="mh-category-tabs">
           ${categoryButtonsHTML}
@@ -170,6 +175,13 @@
             snippetEl.dataset.category === selectedCategory ? "flex" : "none";
         });
       };
+    });
+
+    document.getElementById("mh-extract-hf").onclick = extractHF;
+
+    window.addEventListener("monaco-helper-hf-html-result", (e) => {
+      const output = document.getElementById("mh-hf-output");
+      output.value = e.detail.html;
     });
 
     document.getElementById("mh-search").onkeydown = (e) => {
@@ -287,6 +299,14 @@
         detail: { searchText, replaceText },
       })
     );
+  }
+
+  function extractHF() {
+    if (!editorReady) {
+      showStatus("Editor not ready");
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("monaco-helper-get-hf-html"));
   }
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

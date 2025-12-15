@@ -129,6 +129,29 @@
         navigateToMatch();
       }
     });
+
+    window.addEventListener("monaco-helper-get-hf-html", () => {
+      const editorContent = window.monacoHelperEditor.getValue();
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = editorContent;
+
+      const header = tempDiv.querySelector('[id^="header-2"]');
+      const footer = tempDiv.querySelector('[id^="footer-2"]');
+
+      let combinedHtml = "";
+      if (header) {
+        combinedHtml += header.outerHTML + "\\n";
+      }
+      if (footer) {
+        combinedHtml += footer.outerHTML;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("monaco-helper-hf-html-result", {
+          detail: { html: combinedHtml },
+        })
+      );
+    });
   } else {
     console.log("Injected script could not find editor element.");
   }
