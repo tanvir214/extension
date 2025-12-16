@@ -140,8 +140,12 @@
 
       let combinedHtml = "";
       if (header) {
-        combinedHtml += header.outerHTML + "\\n";
+        combinedHtml += header.outerHTML;
       }
+      // Insert the provided pagebreak div
+      combinedHtml += `<div class="pagebreak" style="break-before: page; border: 13px #D3D3D3 solid; position: relative; z-index: 4; width: calc(100% + 10px); margin-left: -5px; box-sizing: border-box;">
+        <hr style="border: #000000 solid 3px; margin: 0px;">
+      </div>`;
       if (footer) {
         combinedHtml += footer.outerHTML;
       }
@@ -151,6 +155,34 @@
           detail: { html: combinedHtml },
         })
       );
+    });
+
+    window.addEventListener("monaco-helper-get-hf-html-and-insert", () => {
+      const editorContent = window.monacoHelperEditor.getValue();
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = editorContent;
+
+      const header = tempDiv.querySelector('[id^="header-2"]');
+      const footer = tempDiv.querySelector('[id^="footer-2"]');
+
+      let combinedHtml = "";
+      if (header) {
+        combinedHtml += header.outerHTML;
+      }
+      combinedHtml += `<div class="pagebreak" style="break-before: page; border: 13px #D3D3D3 solid; position: relative; z-index: 4; width: calc(100% + 10px); margin-left: -5px; box-sizing: border-box;">
+        <hr style="border: #000000 solid 3px; margin: 0px;">
+      </div>`;
+      if (footer) {
+        combinedHtml += footer.outerHTML;
+      }
+
+      const selection = window.monacoHelperEditor.getSelection();
+      const op = {
+        range: selection,
+        text: combinedHtml,
+        forceMoveMarkers: true,
+      };
+      window.monacoHelperEditor.executeEdits("monaco-helper", [op]);
     });
   } else {
     console.log("Injected script could not find editor element.");

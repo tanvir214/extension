@@ -65,6 +65,10 @@
       name: "White Border",
       code: "border-bottom: 1px solid #FFFFFF;",
     },
+    {
+      category: "Page",
+      name: "pagebreak",
+    },
   ];
 
   window.addEventListener("monaco-helper-editor-ready", () => {
@@ -101,7 +105,9 @@
           s.category
         }" style="display: none;">
         <div class="mh-sname">${s.name}</div>
-        <div class="mh-scode">${s.preview || s.code.split("\n")[0]}</div>
+        <div class="mh-scode">${
+          s.preview || s.code?.split("\n")[0] || ""
+        }</div>
       </div>`;
       })
       .join("");
@@ -155,7 +161,19 @@
     document.querySelectorAll(".mh-snippet").forEach((el) => {
       el.onclick = () => {
         const idx = parseInt(el.dataset.idx);
-        insertSnippet(snippets[idx].code);
+        const snippet = snippets[idx];
+        if (snippet.name === "pagebreak") {
+          if (!editorReady) {
+            showStatus("Editor not ready");
+            return;
+          }
+          window.dispatchEvent(
+            new CustomEvent("monaco-helper-get-hf-html-and-insert")
+          );
+          showStatus("Header/Footer with pagebreak inserted!");
+        } else {
+          insertSnippet(snippet.code);
+        }
       };
     });
 
