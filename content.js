@@ -114,35 +114,34 @@
 
     panel.innerHTML = `
       <div class="mh-header">
-        <span>Monaco Helper</span>
-        <button id="mh-close">×</button>
+        <h3>Monaco Helper</h3>
+        <button id="mh-close" class="mh-icon-btn">&times;</button>
       </div>
-      <div class="mh-section">
-        <h4>Search & Replace</h4>
-        <input type="text" id="mh-search" placeholder="Search...">
-        <input type="text" id="mh-replace" placeholder="Replace...">
-        <div class="mh-btns">
-          <button id="mh-find">Find</button>
-          <button id="mh-replace-one">Replace</button>
-          <button id="mh-replace-all">Replace All</button>
+      <div class="mh-body">
+        <div class="mh-section">
+          <h4>Search & Replace</h4>
+          <div class="mh-input-group">
+            <input type="text" id="mh-search" placeholder="Search..." />
+            <input type="text" id="mh-replace" placeholder="Replace..." />
+          </div>
+          <div class="mh-btn-group">
+            <button id="mh-find">Find</button>
+            <button id="mh-replace-one">Replace</button>
+            <button id="mh-replace-all">Replace All</button>
+          </div>
+          <div class="mh-nav-group">
+            <button id="mh-prev">Previous</button>
+            <span id="mh-status"></span>
+            <button id="mh-next">Next</button>
+          </div>
         </div>
-        <div class="mh-nav-btns">
-          <button id="mh-prev">Previous</button>
-          <button id="mh-next">Next</button>
+        <div class="mh-section">
+          <h4>Snippets</h4>
+          <div id="mh-snippet-categories" class="mh-category-tabs">
+            ${categoryButtonsHTML}
+          </div>
+          <div id="mh-snippets-container">${snippetHTML}</div>
         </div>
-        <div id="mh-status"></div>
-      </div>
-      <div class="mh-section">
-        <h4>Extract Header/Footer</h4>
-        <button id="mh-extract-hf">Extract Header/Footer</button>
-        <textarea id="mh-hf-output" rows="5" style="width: 100%; margin-top: 10px;" placeholder="Extracted HTML will appear here..."></textarea>
-      </div>
-      <div class="mh-section">
-        <h4>Snippets</h4>
-        <div id="mh-snippet-categories" class="mh-category-tabs">
-          ${categoryButtonsHTML}
-        </div>
-        <div id="mh-snippets-container">${snippetHTML}</div>
       </div>
     `;
 
@@ -195,13 +194,6 @@
       };
     });
 
-    document.getElementById("mh-extract-hf").onclick = extractHF;
-
-    window.addEventListener("monaco-helper-hf-html-result", (e) => {
-      const output = document.getElementById("mh-hf-output");
-      output.value = e.detail.html;
-    });
-
     document.getElementById("mh-search").onkeydown = (e) => {
       if (e.key === "Enter") find();
     };
@@ -235,9 +227,7 @@
   function showStatus(msg) {
     const status = document.getElementById("mh-status");
     status.textContent = msg;
-    status.style.display = "block";
-    // Using a longer timeout for better user experience
-    setTimeout(() => (status.style.display = "none"), 3000);
+    setTimeout(() => (status.textContent = ""), 3000);
   }
 
   function insertSnippet(code) {
@@ -317,14 +307,6 @@
         detail: { searchText, replaceText },
       })
     );
-  }
-
-  function extractHF() {
-    if (!editorReady) {
-      showStatus("Editor not ready");
-      return;
-    }
-    window.dispatchEvent(new CustomEvent("monaco-helper-get-hf-html"));
   }
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

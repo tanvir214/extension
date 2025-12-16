@@ -130,59 +130,64 @@
       }
     });
 
-    window.addEventListener("monaco-helper-get-hf-html", () => {
-      const editorContent = window.monacoHelperEditor.getValue();
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = editorContent;
-
-      const header = tempDiv.querySelector('[id^="header-2"]');
-      const footer = tempDiv.querySelector('[id^="footer-2"]');
-
-      let combinedHtml = "";
-      if (header) {
-        combinedHtml += header.outerHTML;
-      }
-      // Insert the provided pagebreak div
-      combinedHtml += `<div class="pagebreak" style="break-before: page; border: 13px #D3D3D3 solid; position: relative; z-index: 4; width: calc(100% + 10px); margin-left: -5px; box-sizing: border-box;">
-        <hr style="border: #000000 solid 3px; margin: 0px;">
-      </div>`;
-      if (footer) {
-        combinedHtml += footer.outerHTML;
-      }
-
-      window.dispatchEvent(
-        new CustomEvent("monaco-helper-hf-html-result", {
-          detail: { html: combinedHtml },
-        })
-      );
-    });
-
     window.addEventListener("monaco-helper-get-hf-html-and-insert", () => {
-      const editorContent = window.monacoHelperEditor.getValue();
+      const model = window.monacoHelperEditor.getModel();
+      const editorContent = model.getValue();
+
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = editorContent;
 
-      const header = tempDiv.querySelector('[id^="header-2"]');
-      const footer = tempDiv.querySelector('[id^="footer-2"]');
+      const headerEl = tempDiv.querySelector('[id^="header-2"]');
+      const footerEl = tempDiv.querySelector('[id^="footer-2"]');
 
-      let combinedHtml = "";
-      if (header) {
-        combinedHtml += header.outerHTML;
+      if (!headerEl && !footerEl) {
+        return;
       }
-      combinedHtml += `<div class="pagebreak" style="break-before: page; border: 13px #D3D3D3 solid; position: relative; z-index: 4; width: calc(100% + 10px); margin-left: -5px; box-sizing: border-box;">
+
+      const edits = [];
+
+      const headerOuterHtml = headerEl ? headerEl.outerHTML : "";
+      const footerOuterHtml = footerEl ? footerEl.outerHTML : "";
+
+      if (headerEl) {
+        const headerMatches = model.findMatches(
+          headerOuterHtml,
+          false,
+          false,
+          true,
+          null,
+          false
+        );
+        if (headerMatches.length > 0) {
+          edits.push({ range: headerMatches[0].range, text: null }); // Deletion
+        }
+      }
+
+      if (footerEl) {
+        const footerMatches = model.findMatches(
+          footerOuterHtml,
+          false,
+          false,
+          true,
+          null,
+          false
+        );
+        if (footerMatches.length > 0) {
+          edits.push({ range: footerMatches[0].range, text: null }); // Deletion
+        }
+      }
+
+      const combinedHtml =
+        headerOuterHtml +
+        `<div class="pagebreak" style="break-before: page; border: 13px #D3D3D3 solid; position: relative; z-index: 4; width: calc(100% + 10px); margin-left: -5px; box-sizing: border-box;">
         <hr style="border: #000000 solid 3px; margin: 0px;">
-      </div>`;
-      if (footer) {
-        combinedHtml += footer.outerHTML;
-      }
+      </div>` +
+        footerOuterHtml;
 
       const selection = window.monacoHelperEditor.getSelection();
-      const op = {
-        range: selection,
-        text: combinedHtml,
-        forceMoveMarkers: true,
-      };
-      window.monacoHelperEditor.executeEdits("monaco-helper", [op]);
+      edits.push({ range: selection, text: combinedHtml });
+
+      window.monacoHelperEditor.getModel().pushEditOperations([], edits, () => null);
     });
   } else {
     console.log("Injected script could not find editor element.");
