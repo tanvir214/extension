@@ -208,6 +208,10 @@
         showStatus(`${currentMatch + 1} of ${matches.length} matches`);
       }
     });
+
+    window.addEventListener("monaco-helper-editor-lost", () => {
+      showStatus("Editor not found or ready.");
+    });
   }
 
   function toggle() {

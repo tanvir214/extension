@@ -1,22 +1,43 @@
-// This script is injected into the page to access the Monaco editor instance.
 (function () {
   let currentMatches = [];
   let currentMatchIndex = -1;
   let allDecorations = [];
   let currentDecoration = [];
-  const editorElement = document.querySelector(".monaco-editor");
-  if (editorElement) {
-    const editor = window.monaco.editor.getEditors()[0];
-    window.monacoHelperEditor = editor;
-    window.dispatchEvent(new CustomEvent("monaco-helper-editor-ready"));
 
+  function getModel() {
+    if (
+      !window.monacoHelperEditor ||
+      !window.monacoHelperEditor.getModel() ||
+      window.monacoHelperEditor.getModel().isDisposed()
+    ) {
+      const editor = window.monaco.editor.getEditors()[0];
+      if (!editor || !editor.getModel() || editor.getModel().isDisposed()) {
+        window.monacoHelperEditor = null;
+        window.dispatchEvent(new CustomEvent("monaco-helper-editor-lost"));
+        return null;
+      }
+      window.monacoHelperEditor = editor;
+    }
+    return window.monacoHelperEditor.getModel();
+  }
+
+  function initialize() {
+    const editor = window.monaco.editor.getEditors()[0];
+    if (editor) {
+      window.monacoHelperEditor = editor;
+      window.dispatchEvent(new CustomEvent("monaco-helper-editor-ready"));
+      return true;
+    }
+    return false;
+  }
+
+  if (initialize()) {
     const navigateToMatch = () => {
       if (currentMatchIndex > -1) {
         const currentMatch = currentMatches[currentMatchIndex];
         window.monacoHelperEditor.setSelection(currentMatch.range);
         window.monacoHelperEditor.revealRangeInCenter(currentMatch.range);
 
-        // Highlight the current match differently
         const newCurrentDecoration = [
           {
             range: currentMatch.range,
@@ -38,7 +59,9 @@
 
     window.addEventListener("monaco-helper-find", (e) => {
       const { searchText } = e.detail;
-      const model = window.monacoHelperEditor.getModel();
+      const model = getModel();
+      if (!model) return;
+
       currentMatches = model.findMatches(
         searchText,
         true,
@@ -75,8 +98,9 @@
 
     window.addEventListener("monaco-helper-replace-one", (e) => {
       const { searchText, replaceText } = e.detail;
-      const model = window.monacoHelperEditor.getModel();
-      // Use current selection if it's a match, otherwise find the first one.
+      const model = getModel();
+      if (!model) return;
+
       const selection = window.monacoHelperEditor.getSelection();
       const selectedText = model.getValueInRange(selection);
       if (selectedText === searchText && currentMatches.length > 0) {
@@ -93,7 +117,9 @@
 
     window.addEventListener("monaco-helper-replace-all", (e) => {
       const { searchText, replaceText } = e.detail;
-      const model = window.monacoHelperEditor.getModel();
+      const model = getModel();
+      if (!model) return;
+
       const edits = currentMatches.map((match) => ({
         range: match.range,
         text: replaceText,
@@ -103,6 +129,9 @@
 
     window.addEventListener("monaco-helper-insert-snippet", (e) => {
       const { code } = e.detail;
+      const model = getModel();
+      if (!model) return;
+
       const selection = window.monacoHelperEditor.getSelection();
       const id = { major: 1, minor: 1 };
       const op = {
@@ -115,6 +144,8 @@
     });
 
     window.addEventListener("monaco-helper-find-next", () => {
+      const model = getModel();
+      if (!model) return;
       if (currentMatches.length > 0) {
         currentMatchIndex = (currentMatchIndex + 1) % currentMatches.length;
         navigateToMatch();
@@ -122,6 +153,8 @@
     });
 
     window.addEventListener("monaco-helper-find-previous", () => {
+      const model = getModel();
+      if (!model) return;
       if (currentMatches.length > 0) {
         currentMatchIndex =
           (currentMatchIndex - 1 + currentMatches.length) %
@@ -131,7 +164,8 @@
     });
 
     window.addEventListener("monaco-helper-get-hf-html-and-insert", () => {
-      const model = window.monacoHelperEditor.getModel();
+      const model = getModel();
+      if (!model) return;
       const editorContent = model.getValue();
 
       const tempDiv = document.createElement("div");
@@ -187,7 +221,7 @@
       const selection = window.monacoHelperEditor.getSelection();
       edits.push({ range: selection, text: combinedHtml });
 
-      window.monacoHelperEditor.getModel().pushEditOperations([], edits, () => null);
+      model.pushEditOperations([], edits, () => null);
     });
   } else {
     console.log("Injected script could not find editor element.");

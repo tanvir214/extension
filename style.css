@@ -1,4 +1,4 @@
-:root {
+#mh-panel {
   --background-color: #1e1e1e;
   --secondary-background-color: #252526;
   --tertiary-background-color: #3c3c3c;
@@ -11,9 +11,8 @@
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-family-monospace: "Courier New", monospace;
   --border-radius: 4px;
-}
 
-#mh-panel {
+  all: initial; /* Reset all inherited styles */
   position: fixed;
   top: 20px;
   right: 20px;
@@ -30,9 +29,16 @@
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.2s ease-out;
+  box-sizing: border-box;
 }
 
-.mh-header {
+#mh-panel *,
+#mh-panel *::before,
+#mh-panel *::after {
+  box-sizing: inherit; /* Inherit box-sizing from the panel */
+}
+
+#mh-panel .mh-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,14 +47,14 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.mh-header h3 {
+#mh-panel .mh-header h3 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: var(--primary-color);
 }
 
-.mh-icon-btn {
+#mh-panel .mh-icon-btn {
   background: none;
   border: none;
   color: var(--text-color);
@@ -60,24 +66,24 @@
   transition: background 0.2s;
 }
 
-.mh-icon-btn:hover {
+#mh-panel .mh-icon-btn:hover {
   background: var(--tertiary-background-color);
 }
 
-.mh-body {
+#mh-panel .mh-body {
   overflow-y: auto;
   flex: 1;
 }
 
-.mh-section {
+#mh-panel .mh-section {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
 }
-.mh-section:last-child {
+#mh-panel .mh-section:last-child {
   border-bottom: none;
 }
 
-.mh-section h4 {
+#mh-panel .mh-section h4 {
   margin: 0 0 12px 0;
   font-size: 11px;
   font-weight: 600;
@@ -86,15 +92,15 @@
   letter-spacing: 0.8px;
 }
 
-.mh-input-group {
+#mh-panel .mh-input-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 10px;
 }
 
-#mh-search,
-#mh-replace {
+#mh-panel #mh-search,
+#mh-panel #mh-replace {
   width: 100%;
   padding: 10px;
   background: var(--tertiary-background-color);
@@ -102,24 +108,24 @@
   color: var(--text-color);
   border-radius: var(--border-radius);
   font-size: 13px;
-  box-sizing: border-box;
+  font-family: var(--font-family);
 }
 
-#mh-search:focus,
-#mh-replace:focus {
+#mh-panel #mh-search:focus,
+#mh-panel #mh-replace:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 1px var(--primary-color);
 }
 
-.mh-btn-group {
+#mh-panel .mh-btn-group {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 6px;
   margin-bottom: 10px;
 }
 
-.mh-btn-group button {
+#mh-panel .mh-btn-group button {
   padding: 8px 10px;
   background: var(--primary-color);
   color: white;
@@ -129,20 +135,21 @@
   font-size: 13px;
   transition: background 0.2s;
   font-weight: 500;
+  font-family: var(--font-family);
 }
 
-.mh-btn-group button:hover {
+#mh-panel .mh-btn-group button:hover {
   background: var(--primary-color-hover);
 }
 
-.mh-nav-group {
+#mh-panel .mh-nav-group {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
 }
 
-.mh-nav-group button {
+#mh-panel .mh-nav-group button {
   padding: 6px 12px;
   background: var(--tertiary-background-color);
   color: var(--text-color);
@@ -150,24 +157,25 @@
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 12px;
+  font-family: var(--font-family);
 }
-.mh-nav-group button:hover {
+#mh-panel .mh-nav-group button:hover {
   background-color: var(--border-color-light);
 }
 
-#mh-status {
+#mh-panel #mh-status {
   font-size: 12px;
   color: var(--text-color-dark);
 }
 
-#mh-snippet-categories {
+#mh-panel #mh-snippet-categories {
   display: flex;
   gap: 6px;
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
-.mh-category-btn {
+#mh-panel .mh-category-btn {
   padding: 6px 12px;
   background: var(--tertiary-background-color);
   color: var(--text-color);
@@ -175,25 +183,26 @@
   border-radius: 15px;
   cursor: pointer;
   font-size: 12px;
+  font-family: var(--font-family);
 }
 
-.mh-category-btn:hover {
+#mh-panel .mh-category-btn:hover {
   background: var(--border-color-light);
 }
 
-.mh-category-btn.active {
+#mh-panel .mh-category-btn.active {
   background: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
 }
 
-#mh-snippets-container {
+#mh-panel #mh-snippets-container {
   max-height: 250px;
   overflow-y: auto;
   padding-right: 5px;
 }
 
-.mh-snippet {
+#mh-panel .mh-snippet {
   background: var(--tertiary-background-color);
   padding: 10px;
   margin-bottom: 8px;
@@ -206,17 +215,17 @@
   align-items: center;
 }
 
-.mh-snippet:hover {
+#mh-panel .mh-snippet:hover {
   border-color: var(--primary-color);
 }
 
-.mh-sname {
+#mh-panel .mh-sname {
   font-weight: 600;
   color: #4ec9b0;
   font-size: 13px;
 }
 
-.mh-scode {
+#mh-panel .mh-scode {
   font-size: 11px;
   color: var(--text-color-dark);
   font-family: var(--font-family-monospace);
@@ -226,18 +235,18 @@
   max-width: 120px;
 }
 
-/* Scrollbar styles */
-::-webkit-scrollbar {
+/* Scrollbar styles (cannot be scoped inside #mh-panel) */
+#mh-panel ::-webkit-scrollbar {
   width: 8px;
 }
-::-webkit-scrollbar-track {
+#mh-panel ::-webkit-scrollbar-track {
   background: var(--background-color);
 }
-::-webkit-scrollbar-thumb {
+#mh-panel ::-webkit-scrollbar-thumb {
   background: #555;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
+#mh-panel ::-webkit-scrollbar-thumb:hover {
   background: #666;
 }
 
