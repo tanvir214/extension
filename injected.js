@@ -143,6 +143,68 @@
       window.monacoHelperEditor.executeEdits("my-source", [op]);
     });
 
+    window.addEventListener("monaco-helper-merge-cells", (e) => {
+      const model = getModel();
+      if (!model) return;
+
+      const selection = window.monacoHelperEditor.getSelection();
+      if (!selection || selection.isEmpty()) return;
+
+      const selectedText = model.getValueInRange(selection);
+
+      const cellRegex = /<(td|th)([^>]*)>(.*?)<\/\1>/gis;
+      const matches = [...selectedText.matchAll(cellRegex)];
+
+      if (matches.length < 2) {
+        return;
+      }
+
+      const contents = [];
+      let totalColspan = 0;
+      let firstTag = "td";
+      let firstTagAttributes = "";
+
+      const colspanRegex = /colspan="(\d+)"/i;
+
+      matches.forEach((match, index) => {
+        if (index === 0) {
+          firstTag = match[1];
+          firstTagAttributes = match[2];
+        }
+        contents.push(match[3].trim());
+
+        const attributes = match[2];
+        const colspanMatch = attributes.match(colspanRegex);
+        if (colspanMatch) {
+          totalColspan += parseInt(colspanMatch[1]);
+        } else {
+          totalColspan += 1;
+        }
+      });
+
+      const mergedContent = contents.join(" ").trim();
+
+      let newAttributes = firstTagAttributes.replace(colspanRegex, "").replace(/\s\s+/g, ' ').trim();
+
+      let finalAttributes = `colspan="${totalColspan}"`;
+      if(newAttributes.length > 0) {
+          finalAttributes += " " + newAttributes;
+      }
+      
+      if (totalColspan <= 1) {
+          finalAttributes = newAttributes;
+      }
+
+      const newCell = `<${firstTag} ${finalAttributes}>${mergedContent}</${firstTag}>`;
+
+      const op = {
+        range: selection,
+        text: newCell,
+        forceMoveMarkers: true,
+      };
+      window.monacoHelperEditor.executeEdits("my-source", [op]);
+    });
+
     window.addEventListener("monaco-helper-find-next", () => {
       const model = getModel();
       if (!model) return;

@@ -136,6 +136,12 @@
           </div>
         </div>
         <div class="mh-section">
+          <h4>Table Operations</h4>
+          <div class="mh-btn-group">
+            <button id="mh-merge-cells">Merge Table Cells</button>
+          </div>
+        </div>
+        <div class="mh-section">
           <h4>Snippets</h4>
           <div id="mh-snippet-categories" class="mh-category-tabs">
             ${categoryButtonsHTML}
@@ -156,6 +162,7 @@
     document.getElementById("mh-prev").onclick = findPrevious;
     document.getElementById("mh-replace-one").onclick = replaceOne;
     document.getElementById("mh-replace-all").onclick = replaceAll;
+    document.getElementById("mh-merge-cells").onclick = mergeCells;
 
     document.querySelectorAll(".mh-snippet").forEach((el) => {
       el.onclick = () => {
@@ -311,6 +318,15 @@
         detail: { searchText, replaceText },
       })
     );
+  }
+
+  function mergeCells() {
+    if (!editorReady) {
+      showStatus("Editor not ready");
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("monaco-helper-merge-cells"));
+    showStatus("Cells merged!");
   }
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
