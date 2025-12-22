@@ -184,18 +184,18 @@
 
       const mergedContent = contents.join(" ").trim();
 
-      let newAttributes = firstTagAttributes.replace(colspanRegex, "").replace(/\s\s+/g, ' ').trim();
+      const newAttributes = firstTagAttributes.replace(colspanRegex, "").replace(/\s\s+/g, ' ').trim();
 
-      let finalAttributes = `colspan="${totalColspan}"`;
-      if(newAttributes.length > 0) {
-          finalAttributes += " " + newAttributes;
+      const attributeParts = [];
+      if (totalColspan > 1) {
+        attributeParts.push(`colspan="${totalColspan}"`);
       }
-      
-      if (totalColspan <= 1) {
-          finalAttributes = newAttributes;
+      if (newAttributes) {
+        attributeParts.push(newAttributes);
       }
+      const finalAttributes = attributeParts.join(' ');
 
-      const newCell = `<${firstTag} ${finalAttributes}>${mergedContent}</${firstTag}>`;
+      const newCell = `<${firstTag}${finalAttributes ? ' ' + finalAttributes : ''}>${mergedContent}</${firstTag}>`;
 
       const op = {
         range: selection,
